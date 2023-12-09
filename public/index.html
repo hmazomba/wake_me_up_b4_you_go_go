@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Music Player</title>
+    <script src="https://unpkg.com/htmx.org"></script>
+</head>
+<body>
+    <h1>Music Player</h1>
+    <input type="text" id="searchQuery" placeholder="Search for songs...">
+    <button hx-get="/search" hx-params="val:searchQuery.value" hx-target="#searchResults" hx-trigger="click">Search</button>
+    <div id="searchResults"></div>
+    <audio id="audioPlayer" controls></audio>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+    </form>
+
+    <script>
+        document.body.addEventListener('htmx:afterRequest', function(evt) {
+            var searchResults = document.getElementById('searchResults');
+            searchResults.querySelectorAll('.song').forEach(function(songElement) {
+                songElement.addEventListener('click', function() {
+                    var audioPlayer = document.getElementById('audioPlayer');
+                    audioPlayer.src = '/stream/' + songElement.dataset.songId;
+                    audioPlayer.play();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
